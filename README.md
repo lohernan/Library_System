@@ -2,7 +2,7 @@
 
 ## 👤 Author
 
-Lorraine Hernandez
+Lorraine Bolanos
 
 ---
 
