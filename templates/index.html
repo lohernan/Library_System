@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">📚 Library Management System</h1>
+
+    <!-- Search -->
+    <form method="GET" class="d-flex mb-4">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search books...">
+        <button class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Book List -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <ul class="list-group">
+                {% for book in books %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ book.title }}</strong> <br>
+                        <small class="text-muted">{{ book.author }}</small>
+                    </div>
+
+                    <div>
+                        {% if book.available %}
+                            <a href="/borrow/{{ book.id }}" class="btn btn-success btn-sm">Borrow</a>
+                        {% else %}
+                            <span class="badge bg-danger">Not Available</span>
+                            <a href="/return/{{ book.id }}" class="btn btn-warning btn-sm ms-2">Return</a>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Overdue Button -->
+    <div class="text-center mt-4">
+        <a href="/overdue" class="btn btn-outline-danger">Check Overdue Books</a>
+    </div>
+</div>
+
+</body>
+</html>
