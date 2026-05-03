@@ -48,15 +48,25 @@ def borrow(book_id):
 # Overdue Checker (AUTOMATION FEATURE)
 @app.route('/overdue')
 def overdue():
+    from datetime import datetime
+
     today = datetime.now()
     overdue_records = Transaction.query.filter(Transaction.due_date < today).all()
 
-    result = "<h2>Overdue Books</h2><ul>"
-    for record in overdue_records:
-        result += f"<li>Book ID: {record.book_id} (Due: {record.due_date})</li>"
-    result += "</ul>"
+    html = """
+    <h2 style='text-align:center;'>⚠️ Overdue Books</h2>
+    <ul style='max-width:600px;margin:auto;'>
+    """
 
-    return result
+    for record in overdue_records:
+        html += f"<li>Book ID: {record.book_id} | Due: {record.due_date.strftime('%Y-%m-%d')}</li>"
+
+    html += "</ul>"
+
+    if not overdue_records:
+        html += "<p style='text-align:center;'>No overdue books 🎉</p>"
+
+    return html
 
 # Seed Data (run once)
 @app.route('/seed')
@@ -68,18 +78,13 @@ def seed():
     db.session.commit()
     return "Database seeded!"
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 @app.route('/return/<int:book_id>')
 def return_book(book_id):
-    book = Book.query.get(book_id)
+    book = Book.query.get_or_404(book_id)
 
-    if book.available:
-        return "Book is already available!"
-
-    # Find latest transaction
-    transaction = Transaction.query.filter_by(book_id=book.id).order_by(Transaction.id.desc()).first()
+    transaction = Transaction.query.filter_by(book_id=book.id)\
+        .order_by(Transaction.id.desc()).first()
 
     if transaction:
         db.session.delete(transaction)
@@ -88,3 +93,6 @@ def return_book(book_id):
     db.session.commit()
 
     return redirect('/')
+
+if __name__ == '__main__':
+    app.run(debug=True)
